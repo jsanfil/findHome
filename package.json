@@ -1,0 +1,14 @@
+{
+  "name": "findHome",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n API,WEB -c blue,green \"npm:dev --workspace server\" \"npm:dev --workspace client\""
+  },
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

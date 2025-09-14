@@ -1,0 +1,85 @@
+# === CLINE PROJECT GUARDRAILS ===
+# Stack: client (Vite/React), server (Node/Express)
+# Goal: prevent risky actions, keep diffs small, favor explain-first changes.
+
+## SCOPE & STRUCTURE
+- Project has two roots: /client and /server. Do not create a third app unless explicitly asked.
+- Frontend dev server runs at 5173; backend at 3001 (configurable via .env).
+- Use Vite proxy for /api in dev; DO NOT add CORS to server unless requested.
+
+## FILE & FOLDER SAFETY
+- NEVER delete or overwrite .env, .env.* or any file containing secrets/keys.
+- Do not rename or move top-level folders (client, server) without approval.
+- Keep PR-sized diffs: group related changes and explain them before applying.
+- When generating many files (e.g., scaffolds), ask before creating >10 files.
+
+## TERMINAL & COMMANDS
+- Always SHOW the exact command before running it and WAIT for approval.
+- Prefer local, project-scoped commands. No global installs (avoid -g) unless approved.
+- Allowed common commands (ask first, but typically OK):
+  - client: npm i, npm run dev, npm run build, npm run lint, npm run test
+  - server: npm i, npm run dev, npm run test
+- Forbidden without approval: docker builds, brew/apt installs, git push, changing global git config.
+
+## DEPENDENCIES
+- Keep deps minimal; explain why each new dep is needed.
+- Frontend: prefer React, react-router, TanStack Query, zod (only if used).
+- Backend: express, zod, dotenv, supertest/jest (or vitest) for tests.
+- If adding a dep, update package.json scripts when relevant and run a lightweight smoke test.
+
+## SECRETS & CONFIG
+- Never print or commit API keys, tokens, or credentials.
+- Read env via process.env (server) and import.meta.env (client).
+- Do not invent fake keys; use placeholders like YOUR_API_KEY_HERE.
+
+## GIT HYGIENE
+- Explain diffs in plain English BEFORE applying them.
+- Commit in small, logical chunks with clear messages.
+- Never force-push, never rewrite history unless explicitly instructed.
+
+## CODING CONVENTIONS
+- Type safety (optional but preferred): minimal JSDoc or TS-ready structure.
+- Linting/formatting: use ESLint + Prettier defaults; auto-fix where safe.
+- Testing: prefer vitest or jest + supertest for server routes; write at least 1–2 focused tests when adding endpoints.
+- Keep concerns separated:
+  - server/src/routes/* for endpoints
+  - server/src/services/* for business logic
+  - client/src/components/* UI
+  - client/src/lib/api.ts|js for fetch helpers
+
+## CLIENT ↔ SERVER CONTRACTS
+- All client API calls go through /api proxy (no hard-coded 3001 URLs in client).
+- Validate request bodies on the server (zod/schema).
+- Return consistent JSON {data, error} shapes where possible.
+
+## PERFORMANCE & DX
+- Prefer incremental refactors over large rewrites.
+- Avoid introducing heavy UI kits or state libs unless asked (e.g., Redux).
+- Keep bundle size reasonable; justify any large dependency.
+
+## SCRAPING / DATA SOURCES
+- If asked to fetch real-estate data, do NOT scrape protected sites by default.
+- Offer mock data or a clearly ToS-compliant API; if scraping is explicitly requested, isolate scraper code and allow easy disablement.
+
+## MODEL & COST CONTROL
+- Default model: Claude 3.5 Haiku (cheap/fast).
+- For complex refactors/tests, ask before switching to GPT-4.1 or Sonnet.
+- Keep responses concise; avoid excessive token use (no long rambling plans).
+
+## APPROVAL CHECKPOINTS (ALWAYS ASK BEFORE DOING)
+- Installing new dependencies.
+- Running any command that modifies the system or many files.
+- Making structural changes (moving folders, build config changes).
+- Introducing auth, DB layers, or external services.
+
+## DONE CRITERIA (WHEN CLAIMING A TASK COMPLETE)
+- App builds and runs (client dev server, server dev server).
+- New/changed routes have a minimal happy-path test (server).
+- Lint passes (or remaining issues are listed with rationale).
+- Short summary of what changed and why, with next steps.
+
+# OPTIONAL TASK SEEDS (SAFE TO START WHEN ASKED)
+- “Add zod validation to POST /api/todos and return 400 on invalid input; include a supertest.”
+- “Extract server services layer and update routes accordingly; no behavior changes.”
+- “Create client/lib/api with fetch helpers; refactor components to use it.”
+- “Add ESLint+Prettier config to both apps and fix auto-fixable issues only.”
