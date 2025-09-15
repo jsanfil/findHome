@@ -1,12 +1,47 @@
-# React + Vite
+# My Next Home
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Description
+My Next Home is a web application designed to facilitate the search for homes for sale through a conversational interface. Users can describe their search criteria in natural language, and the application will return a list of homes that match their requests.
 
-Currently, two official plugins are available:
+## Features
+- Conversational search for homes using natural language.
+- Integration with the Zillow API for real estate data.
+- Utilization of GPT APIs for enhanced user interaction and query processing.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Installation
+To set up the project locally, follow these steps:
 
-## Expanding the ESLint configuration
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/my-next-home.git
+   cd my-next-home
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. Install dependencies for both client and server:
+   ```bash
+   cd client
+   npm install
+   cd ../server
+   npm install
+   ```
+
+3. Start the development servers:
+   - For the client:
+     ```bash
+     cd client
+     npm run dev
+     ```
+   - For the server:
+     ```bash
+     cd server
+     npm run dev
+     ```
+
+## Usage
+Once the servers are running, navigate to `http://localhost:5173` in your web browser to access the application. You can start typing your home search queries in the input field.
+
+## Contributing
+Contributions are welcome! Please submit a pull request or open an issue for any enhancements or bug fixes.
+
+## License
+This project is licensed under the MIT License.
