@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
+import FilterPanel from './components/FilterPanel'
 
 function formatMoney(n) {
   if (n == null) return ''
@@ -90,6 +91,33 @@ export default function App() {
     return sendMessage(msg)
   }
 
+  function onRemoveFilter(filterKey) {
+    // Reconstruct the query by removing the specific filter
+    const currentFilters = results.filters || {};
+    const { [filterKey]: removedFilter, ...remainingFilters } = currentFilters;
+
+    // Reconstruct a query message based on remaining filters
+    const filterToQueryMap = {
+      location: (val) => `in ${val}`,
+      price: (val) => `${val.min ? `from $${val.min}` : ''} ${val.max ? `under $${val.max}` : ''}`,
+      beds: (val) => `${val.min} bed`,
+      baths: (val) => `${val.min} bath`,
+      propertyTypes: (val) => val.join(', '),
+      daysOnMarket: (val) => `listed in last ${val} days`,
+      keywords: (val) => val.join(' '),
+      sortBy: (val) => `sorted by ${val}`
+    };
+
+    const queryParts = Object.entries(remainingFilters)
+      .filter(([key]) => key !== 'page')
+      .map(([key, value]) => filterToQueryMap[key](value))
+      .join(' ');
+
+    // Send the reconstructed query
+    const reconstructedQuery = queryParts.trim() || 'homes';
+    return sendMessage(reconstructedQuery);
+  }
+
   return (
     <div className="app">
       <header className="appHeader">
@@ -167,6 +195,13 @@ export default function App() {
             </div>
           </div>
 
+          {results.filters && (
+            <FilterPanel
+              filters={results.filters}
+              onRemoveFilter={onRemoveFilter}
+            />
+          )}
+
           {!loading && (!results.listings || results.listings.length === 0) ? (
             <EmptyState />
           ) : (
@@ -227,9 +262,9 @@ function EmptyState() {
       <div className="emptyBody">
         Try a query like:
         <ul>
-          <li>“3-bed homes in Denver under 650k”</li>
-          <li>“Condos in San Diego new this week under 900k”</li>
-          <li>“Townhomes in Austin with a garage”</li>
+          <li>"3-bed homes in Denver under 650k"</li>
+          <li>"Condos in San Diego new this week under 900k"</li>
+          <li>"Townhomes in Austin with a garage"</li>
         </ul>
       </div>
     </div>
