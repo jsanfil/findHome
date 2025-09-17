@@ -5,6 +5,16 @@ const app = express();
 const { search: searchListings } = require('./services/listingsService');
 const { parseQuery, KNOWN_CITIES } = require('./utils/parseQuery');
 
+// Request logging middleware
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] ${req.method} ${req.path}`);
+  if (req.body && Object.keys(req.body).length > 0) {
+    console.log('Request Body:', JSON.stringify(req.body, null, 2));
+  }
+  next();
+});
+
 app.use(express.json());
 
 app.get('/api/health', (_req, res) => {
@@ -158,4 +168,13 @@ app.use((err, _req, res, _next) => {
 });
 
 const port = process.env.PORT || 3001;
-app.listen(port, () => console.log(`API on http://localhost:${port}`));
+const environment = process.env.NODE_ENV || 'development';
+
+console.log(`[STARTUP] Server initializing`);
+console.log(`[STARTUP] Environment: ${environment}`);
+console.log(`[STARTUP] Timestamp: ${new Date().toISOString()}`);
+
+app.listen(port, () => {
+  console.log(`[STARTUP] API running on http://localhost:${port}`);
+  console.log(`[STARTUP] Server fully initialized at: ${new Date().toISOString()}`);
+});
