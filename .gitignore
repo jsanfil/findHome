@@ -1,0 +1,50 @@
+# ---- Node dependencies ----
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# ---- Build outputs ----
+dist/
+build/
+client/dist/
+server/dist/
+coverage/
+
+# ---- Logs ----
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Runtime data ----
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# ---- Environment variables ----
+.env
+.env.local
+.env.*.local
+client/.env
+server/.env
+
+# ---- VS Code ----
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ---- OS cruft ----
+.DS_Store
+Thumbs.db
+
+# ---- Optional caches ----
+.cache/
+.next/
+.out/
+.eslintcache
+.parcel-cache/
