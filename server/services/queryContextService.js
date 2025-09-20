@@ -4,34 +4,47 @@
  */
 class QueryContextService {
     constructor() {
-        this.context = {};
+        this.contexts = {};
     }
 
     /**
-     * Merge new filters with existing context
+     * Merge new filters with existing context for a session
+     * @param {string} sessionId - Session identifier
      * @param {Object} newFilters - Newly parsed filters
      * @returns {Object} Updated context
      */
-    mergeFilters(newFilters) {
+    mergeFilters(sessionId, newFilters) {
+        if (!this.contexts[sessionId]) {
+            this.contexts[sessionId] = {};
+        }
+
+        // Normalize propertyTypes to array if needed
+        if (newFilters.propertyTypes && !Array.isArray(newFilters.propertyTypes)) {
+            if (typeof newFilters.propertyTypes === 'object') {
+                newFilters.propertyTypes = Object.values(newFilters.propertyTypes);
+            } else {
+                newFilters.propertyTypes = [newFilters.propertyTypes];
+            }
+        }
+
         // Prevent complete context reset
         if (Object.keys(newFilters).length === 0) {
-            return this.context;
+            return this.contexts[sessionId];
         }
 
         // Preserve location if not explicitly changed
-        if (this.context.location && !newFilters.location) {
-            newFilters.location = this.context.location;
+        if (this.contexts[sessionId].location && !newFilters.location) {
+            newFilters.location = this.contexts[sessionId].location;
         }
 
         // Merge filters, preserving existing values for unspecified keys
-        const updatedContext = { ...this.context };
+        const updatedContext = { ...this.contexts[sessionId] };
 
         // Prioritize new filters while keeping existing context
         Object.keys(newFilters).forEach(key => {
-            // Special handling for nested objects like price, beds, baths
             if (typeof newFilters[key] === 'object' && newFilters[key] !== null) {
                 updatedContext[key] = {
-                    ...this.context[key],
+                    ...this.contexts[sessionId][key],
                     ...newFilters[key]
                 };
             } else {
@@ -39,23 +52,27 @@ class QueryContextService {
             }
         });
 
-        this.context = updatedContext;
-        return this.context;
+        this.contexts[sessionId] = updatedContext;
+        return this.contexts[sessionId];
     }
 
     /**
-     * Reset the current context
+     * Reset the context for a specific session
+     * @param {string} sessionId - Session identifier
      */
-    resetContext() {
-        this.context = {};
+    resetContext(sessionId) {
+        if (sessionId && this.contexts[sessionId]) {
+            delete this.contexts[sessionId];
+        }
     }
 
     /**
-     * Get the current context
+     * Get the current context for a session
+     * @param {string} sessionId - Session identifier
      * @returns {Object} Current context
      */
-    getContext() {
-        return { ...this.context };
+    getContext(sessionId) {
+        return { ...(this.contexts[sessionId] || {}) };
     }
 }
 

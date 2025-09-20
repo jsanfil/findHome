@@ -49,6 +49,7 @@ export default function App() {
     return Math.random().toString(36).substring(2, 15)
   })
 
+
   async function sendMessage(raw) {
     const text = String(raw ?? input).trim()
     if (!text) return
@@ -60,8 +61,8 @@ export default function App() {
     setInput('')
 
     // Determine if this is a new query or continuation
-    // If messages length is 1 (only initial assistant message), treat as new query
-    const isNewQuery = messages.length <= 1
+    // Only treat as new query if explicitly indicated (e.g., from reset button)
+    const isNewQuery = false
 
     try {
       const res = await fetch('/api/chat/query', {
@@ -162,7 +163,11 @@ export default function App() {
 
           <form
             className="inputBar"
-            onSubmit={(e) => { e.preventDefault(); if (canSend) sendMessage() }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (canSend) sendMessage()
+            }}
           >
             <input
               value={input}
@@ -187,6 +192,7 @@ export default function App() {
                   { role: 'assistant', content: 'Tell me what you\'re looking for. For example: "3-bed homes in Denver under 650k" or "Condos in San Diego new this week under $900k".' }
                 ]);
               }}
+              sessionId={sessionId}
             />
             <button type="submit" disabled={!canSend}>Send</button>
           </form>

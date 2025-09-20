@@ -2,11 +2,11 @@ import React from 'react';
 import axios from 'axios';
 import './ResetButton.css';
 
-const ResetButton = ({ onReset }) => {
+const ResetButton = ({ onReset, sessionId }) => {
     const handleReset = async () => {
         try {
             // Reset server-side context
-            await axios.post('/api/reset');
+            await axios.post('/api/context/reset', { sessionId });
 
             // Clear any local state or trigger parent component to reset
             if (onReset) {
@@ -21,6 +21,7 @@ const ResetButton = ({ onReset }) => {
 
     return (
         <button
+            type="button"
             className="reset-button"
             onClick={handleReset}
             aria-label="Reset search context"
