@@ -13,8 +13,8 @@ To set up the project locally, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/my-next-home.git
-   cd my-next-home
+   git clone https://github.com/jsanfil/findHome.git
+   cd findHome
    ```
 
 2. Install dependencies for both client and server:
@@ -26,14 +26,8 @@ To set up the project locally, follow these steps:
    ```
 
 3. Start the development servers:
-   - For the client:
+   - At the project root:
      ```bash
-     cd client
-     npm run dev
-     ```
-   - For the server:
-     ```bash
-     cd server
      npm run dev
      ```
 
