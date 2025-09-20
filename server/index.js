@@ -4,6 +4,7 @@ const app = express();
 
 const { search: searchListings } = require('./services/listingsService');
 const { parseQuery, KNOWN_CITIES } = require('./utils/parseQuery');
+const queryContextService = require('./services/queryContextService');
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -34,6 +35,7 @@ app.post('/api/todos', (req, res) => {
   res.status(201).json(todo);
 });
 
+
 // Listings search - accepts structured filters (FilterSchema)
 app.post('/api/listings/search', async (req, res, next) => {
   try {
@@ -45,16 +47,34 @@ app.post('/api/listings/search', async (req, res, next) => {
   }
 });
 
+// Mount contextRoutes for context-related endpoints
+const contextRoutes = require('./routes/contextRoutes');
+app.use('/api', contextRoutes);
+
 // Chat query - accepts natural language, returns interpreted filters + listings or clarifying Qs
 app.post('/api/chat/query', async (req, res, next) => {
   try {
-    const { message } = req.body || {};
+    const { message, isNewQuery = false, sessionId } = req.body || {};
     if (!message || !String(message).trim()) {
       return res.status(400).json({ error: 'message is required' });
     }
+    if (!sessionId || typeof sessionId !== 'string') {
+      return res.status(400).json({ error: 'sessionId is required and must be a string' });
+    }
+
+    // Reset context for new queries
+    if (isNewQuery) {
+      queryContextService.resetContext(sessionId);
+    }
+
+    // Get current context
+    const previousContext = queryContextService.getContext(sessionId);
 
     // MVP: rules-based parser (no LLM yet)
-    const filters = parseQuery(message);
+    const filters = parseQuery(message, previousContext);
+
+    // Update context with new filters
+    queryContextService.mergeFilters(sessionId, filters);
 
     // If location missing, ask a clarifying question instead of guessing
     const clarifyingQuestions = [];

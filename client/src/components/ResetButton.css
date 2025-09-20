@@ -1,0 +1,26 @@
+/* Reset Button Styling */
+.reset-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reset-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.reset-button svg {
+    width: 20px;
+    height: 20px;
+    color: #666;
+}
+
+.reset-button:hover svg {
+    color: #333;
+}

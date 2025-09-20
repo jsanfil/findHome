@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import FilterPanel from './components/FilterPanel'
+import FilterDisplay from './components/FilterDisplay'
+import ResetButton from './components/ResetButton'
 
 function formatMoney(n) {
   if (n == null) return ''
@@ -41,6 +43,12 @@ export default function App() {
 
   const canSend = useMemo(() => input.trim().length > 0 && !loading, [input, loading])
 
+  // Generate a unique session ID for the conversation
+  const [sessionId] = useState(() => {
+    // Simple random ID generator
+    return Math.random().toString(36).substring(2, 15)
+  })
+
   async function sendMessage(raw) {
     const text = String(raw ?? input).trim()
     if (!text) return
@@ -51,11 +59,15 @@ export default function App() {
     setMessages(prev => [...prev, { role: 'user', content: text }])
     setInput('')
 
+    // Determine if this is a new query or continuation
+    // If messages length is 1 (only initial assistant message), treat as new query
+    const isNewQuery = messages.length <= 1
+
     try {
       const res = await fetch('/api/chat/query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, isNewQuery, sessionId }),
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
@@ -157,6 +169,24 @@ export default function App() {
               onChange={(e) => setInput(e.target.value)}
               placeholder='Try: "3-bed homes in Denver under 650k"'
               aria-label="Message"
+            />
+            <ResetButton
+              onReset={() => {
+                // Reset local state and potentially clear context
+                setResults({
+                  assistantSummary: '',
+                  listings: [],
+                  refinements: [],
+                  total: 0,
+                  page: 1,
+                  pageSize: 10,
+                  filters: null,
+                  clarifyingQuestions: []
+                });
+                setMessages([
+                  { role: 'assistant', content: 'Tell me what you\'re looking for. For example: "3-bed homes in Denver under 650k" or "Condos in San Diego new this week under $900k".' }
+                ]);
+              }}
             />
             <button type="submit" disabled={!canSend}>Send</button>
           </form>

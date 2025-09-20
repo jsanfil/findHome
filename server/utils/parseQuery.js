@@ -153,19 +153,32 @@ function parsePage(text) {
     return 1;
 }
 
-function parseQuery(message) {
+function parseQuery(message, previousContext = {}) {
     const text = String(message || '').trim();
+
+    // Special handling for reset or empty messages
+    if (!text || text.toLowerCase() === 'reset') {
+        return {};
+    }
+
     const filters = {
-        location: parseLocation(text),
-        price: parsePrice(text),
-        beds: parseBeds(text),
-        baths: parseBaths(text),
-        propertyTypes: parsePropertyTypes(text),
-        daysOnMarket: parseDaysOnMarket(text),
-        keywords: parseKeywords(text),
-        sortBy: parseSort(text),
+        location: parseLocation(text) || previousContext.location,
+        price: parsePrice(text) || previousContext.price,
+        beds: parseBeds(text) || previousContext.beds,
+        baths: parseBaths(text) || previousContext.baths,
+        propertyTypes: parsePropertyTypes(text) || previousContext.propertyTypes,
+        daysOnMarket: parseDaysOnMarket(text) || previousContext.daysOnMarket,
+        keywords: parseKeywords(text) || previousContext.keywords,
+        sortBy: parseSort(text) || previousContext.sortBy,
         page: parsePage(text),
     };
+
+    // Preserve previous context for unspecified filters
+    Object.keys(previousContext).forEach(key => {
+        if (filters[key] === undefined) {
+            filters[key] = previousContext[key];
+        }
+    });
 
     // Clean empty objects like {min: undefined, max: undefined}
     if (filters.price && filters.price.min == null && filters.price.max == null) delete filters.price;
