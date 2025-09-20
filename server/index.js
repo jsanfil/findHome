@@ -18,34 +18,6 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, service: 'api', ts: new Date().toISOString() });
-});
-
-// simple in-memory data to start (kept from scaffold)
-let todos = [{ id: 1, text: 'learn Cline', done: false }];
-
-app.get('/api/todos', (_req, res) => res.json(todos));
-
-app.post('/api/todos', (req, res) => {
-  const { text } = req.body || {};
-  if (!text) return res.status(400).json({ error: 'text is required' });
-  const todo = { id: Date.now().toString(), text, done: false };
-  todos.unshift(todo);
-  res.status(201).json(todo);
-});
-
-// Listings search - accepts structured filters (FilterSchema)
-app.post('/api/listings/search', async (req, res, next) => {
-  try {
-    const filters = req.body || {};
-    const page = await searchListings(filters);
-    res.json(page);
-  } catch (err) {
-    next(err);
-  }
-});
-
 // Mount consolidated routes for API endpoints
 const apiRoutes = require('./routes');
 app.use('/api', apiRoutes);

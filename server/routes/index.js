@@ -10,19 +10,6 @@ router.get('/health', (_req, res) => {
     res.json({ ok: true, service: 'api', ts: new Date().toISOString() });
 });
 
-// Todos endpoints (scaffold)
-let todos = [{ id: 1, text: 'learn Cline', done: false }];
-
-router.get('/todos', (_req, res) => res.json(todos));
-
-router.post('/todos', (req, res) => {
-    const { text } = req.body || {};
-    if (!text) return res.status(400).json({ error: 'text is required' });
-    const todo = { id: Date.now().toString(), text, done: false };
-    todos.unshift(todo);
-    res.status(201).json(todo);
-});
-
 // Listings search endpoint
 router.post('/listings/search', async (req, res, next) => {
     try {
