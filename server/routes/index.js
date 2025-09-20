@@ -30,6 +30,15 @@ router.post('/context/reset', (req, res) => {
     res.json({ message: 'Context reset successfully' });
 });
 
+router.post('/context/remove-filter', (req, res) => {
+    const { sessionId, filterKey } = req.body || {};
+    if (!sessionId) return res.status(400).json({ error: 'sessionId is required' });
+    if (!filterKey) return res.status(400).json({ error: 'filterKey is required' });
+
+    queryContextService.removeFilter(sessionId, filterKey);
+    res.json({ message: 'Filter removed successfully' });
+});
+
 router.get('/context/current', (req, res) => {
     const { sessionId } = req.query;
     if (!sessionId) return res.status(400).json({ error: 'sessionId is required' });

@@ -105,30 +105,35 @@ export default function App() {
   }
 
   function onRemoveFilter(filterKey) {
-    // Reconstruct the query by removing the specific filter
-    const currentFilters = results.filters || {};
-    const { [filterKey]: removedFilter, ...remainingFilters } = currentFilters;
+    // Update local filters immediately
+    const updatedFilters = { ...results.filters };
+    delete updatedFilters[filterKey];
+    setResults(prev => ({ ...prev, filters: updatedFilters }));
 
-    // Reconstruct a query message based on remaining filters
-    const filterToQueryMap = {
-      location: (val) => `in ${val}`,
-      price: (val) => `${val.min ? `from $${val.min}` : ''} ${val.max ? `under $${val.max}` : ''}`,
-      beds: (val) => `${val.min} bed`,
-      baths: (val) => `${val.min} bath`,
-      propertyTypes: (val) => val.join(', '),
-      daysOnMarket: (val) => `listed in last ${val} days`,
-      keywords: (val) => val.join(' '),
-      sortBy: (val) => `sorted by ${val}`
-    };
+    // Update server context
+    fetch('/api/context/remove-filter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId, filterKey }),
+    }).catch(() => { }); // Ignore errors for now
 
-    const queryParts = Object.entries(remainingFilters)
-      .filter(([key]) => key !== 'page')
-      .map(([key, value]) => filterToQueryMap[key](value))
-      .join(' ');
-
-    // Send the reconstructed query
-    const reconstructedQuery = queryParts.trim() || 'homes';
-    return sendMessage(reconstructedQuery);
+    // Fetch new listings with updated filters
+    fetch('/api/listings/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedFilters),
+    })
+      .then(r => r.json())
+      .then(data => {
+        setResults(prev => ({
+          ...prev,
+          listings: data.items || [],
+          total: data.total || 0,
+          page: data.page || 1,
+          pageSize: data.pageSize || 10,
+        }));
+      })
+      .catch(() => setError('Failed to update listings'));
   }
 
   return (

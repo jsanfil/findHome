@@ -67,6 +67,17 @@ class QueryContextService {
     }
 
     /**
+     * Remove a specific filter from the context for a session
+     * @param {string} sessionId - Session identifier
+     * @param {string} filterKey - Filter key to remove
+     */
+    removeFilter(sessionId, filterKey) {
+        if (this.contexts[sessionId] && this.contexts[sessionId][filterKey]) {
+            delete this.contexts[sessionId][filterKey];
+        }
+    }
+
+    /**
      * Get the current context for a session
      * @param {string} sessionId - Session identifier
      * @returns {Object} Current context
