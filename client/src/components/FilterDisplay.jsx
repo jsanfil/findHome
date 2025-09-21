@@ -6,7 +6,7 @@ const formatFilter = (key, value) => {
 
     switch (key) {
         case 'location':
-            return `Location: ${value}`;
+            return `Location: ${value.city}${value.state ? ', ' + value.state : ''}`;
         case 'price':
             const priceText = [];
             if (value.min) priceText.push(`Min: $${value.min.toLocaleString()}`);
@@ -17,7 +17,14 @@ const formatFilter = (key, value) => {
         case 'baths':
             return `Baths: ${value.min}+`;
         case 'propertyTypes':
-            return `Property Types: ${value.join(', ')}`;
+            return `Property Types: ${Array.isArray(value) ? value.join(', ') : value}`;
+        case 'propertyType':
+            return `Property Type: ${value}`;
+        case 'squareFeet':
+            const sqftText = [];
+            if (value.min) sqftText.push(`Min: ${value.min} sqft`);
+            if (value.max) sqftText.push(`Max: ${value.max} sqft`);
+            return `SqFt: ${sqftText.join(' - ')}`;
         case 'daysOnMarket':
             return `Listed in last ${value} days`;
         default:

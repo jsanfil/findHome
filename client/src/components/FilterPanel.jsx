@@ -5,7 +5,7 @@ function formatFilterLabel(key, value) {
     console.log('Formatting filter:', { key, value }); // Debug log
 
     const labels = {
-        location: () => `Location: ${value}`,
+        location: () => `Location: ${value.city}${value.state ? ', ' + value.state : ''}`,
         price: () => {
             const parts = [];
             if (value.min) parts.push(`Min $${value.min.toLocaleString()}`);
@@ -15,6 +15,13 @@ function formatFilterLabel(key, value) {
         beds: () => `Beds: ${value.min}+`,
         baths: () => `Baths: ${value.min}+`,
         propertyTypes: () => `Types: ${Array.isArray(value) ? value.join(', ') : value}`,
+        propertyType: () => `Type: ${value}`,
+        squareFeet: () => {
+            const parts = [];
+            if (value.min) parts.push(`Min ${value.min} sqft`);
+            if (value.max) parts.push(`Max ${value.max} sqft`);
+            return `SqFt: ${parts.join(' ')}`;
+        },
         daysOnMarket: () => `Listed in last ${value} days`,
         keywords: () => `Keywords: ${Array.isArray(value) ? value.join(', ') : value}`,
         sortBy: () => `Sort: ${value}`
