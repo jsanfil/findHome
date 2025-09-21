@@ -68,7 +68,10 @@ router.post('/chat/query', async (req, res, next) => {
 
         // Use new QueryParsingService
         const queryParsingService = new QueryParsingService();
-        const filters = queryParsingService.parse(message, previousContext);
+        const filters = await queryParsingService.parse(message, previousContext);
+
+        // Debug: Log parsed filters
+        console.log(`[ROUTE] Parsed filters:`, JSON.stringify(filters, null, 2));
 
         // Update context with new filters
         queryContextService.mergeFilters(sessionId, filters);
@@ -78,7 +81,7 @@ router.post('/chat/query', async (req, res, next) => {
         const refinements = queryParsingService.generateRefinements(filters);
 
         // If location missing, ask a clarifying question instead of guessing
-        if (!filters.location) {
+        if (!filters.location?.city) {
             return res.json({
                 assistantSummary:
                     'I need a location to search. Please specify a city and state (e.g., "Denver, CO").',
@@ -116,7 +119,12 @@ router.post('/chat/query', async (req, res, next) => {
 // Helper function for summarizing filters
 function summarizeFilters(filters, total) {
     const parts = [];
-    if (filters.location) parts.push(filters.location);
+    if (filters.location?.city) {
+        const locationStr = filters.location.state
+            ? `${filters.location.city}, ${filters.location.state}`
+            : filters.location.city;
+        parts.push(locationStr);
+    }
     if (filters.price?.max) parts.push(`≤ $${formatMoney(filters.price.max)}`);
     if (filters.price?.min) parts.push(`≥ $${formatMoney(filters.price.min)}`);
     if (filters.beds?.min) parts.push(`${filters.beds.min}+ beds`);

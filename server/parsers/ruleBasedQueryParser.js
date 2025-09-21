@@ -2,6 +2,15 @@ const QueryParserInterface = require('./queryParserInterface');
 const { parseQuery, KNOWN_CITIES } = require('../utils/parseQuery');
 
 class RuleBasedQueryParser extends QueryParserInterface {
+    constructor(config = {}) {
+        super(config);
+
+        // Initialization logging
+        console.log(`[RuleBasedQueryParser] Initialized with:`, {
+            debug: this.config.debug || false
+        });
+    }
+
     parse(query, context) {
         return parseQuery(query, context);
     }

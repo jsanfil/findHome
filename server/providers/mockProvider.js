@@ -317,6 +317,24 @@ function matchesDaysOnMarket(listing, dom) {
 
 function matchesLocation(listing, location) {
     if (!location) return true;
+
+    // Handle location as object {city, state?}
+    if (typeof location === 'object' && location.city) {
+        const searchCity = location.city.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const searchState = location.state ? location.state.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+
+        const hay = `${listing.address} ${listing.city} ${listing.state} ${listing.zip}`
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '');
+
+        // Match city and optionally state
+        const cityMatch = hay.includes(searchCity);
+        const stateMatch = !searchState || hay.includes(searchState);
+
+        return cityMatch && stateMatch;
+    }
+
+    // Fallback for string location (backward compatibility)
     const hay = `${listing.address} ${listing.city} ${listing.state} ${listing.zip}`
         .toLowerCase()
         .replace(/[^a-z0-9]/g, '');

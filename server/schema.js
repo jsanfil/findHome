@@ -22,7 +22,10 @@ const SortByEnum = z.enum(['price_asc', 'price_desc', 'dom_desc', 'relevance']);
 
 // Filters schema (MVP)
 const FilterSchema = z.object({
-    location: z.string().min(1).optional(), // city/state/neighborhood/zip (optional but strongly recommended)
+    location: z.object({
+        city: z.string().min(1),
+        state: z.string().optional()
+    }).optional(), // city/state object (optional but strongly recommended)
     price: RangeNumber.optional(),
     beds: RangeNumber.optional(),
     baths: RangeNumber.optional(), // optional as requested
