@@ -47,7 +47,7 @@ class OpenAIQueryParser extends QueryParserInterface {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: requestBody
+                    body: JSON.stringify(requestBody, null, 2)
                 });
             }
 
@@ -72,7 +72,7 @@ class OpenAIQueryParser extends QueryParserInterface {
                 console.log(`[OpenAIQueryParser] Response:`, {
                     status: response.status,
                     statusText: response.statusText,
-                    content: content ? content.substring(0, 200) + '...' : null,
+                    content: content ? `${content.substring(0, 200)}...` : null,
                     usage: data.usage
                 });
             }

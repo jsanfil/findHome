@@ -49,7 +49,7 @@ class OpenRouterQueryParser extends QueryParserInterface {
                         'HTTP-Referer': process.env.APP_URL || 'http://localhost:3001',
                         'X-Title': 'FindHome Query Parser'
                     },
-                    body: requestBody
+                    body: JSON.stringify(requestBody, null, 2)
                 });
             }
 
@@ -76,7 +76,7 @@ class OpenRouterQueryParser extends QueryParserInterface {
                 console.log(`[OpenRouterQueryParser] Response:`, {
                     status: response.status,
                     statusText: response.statusText,
-                    content: content ? content.substring(0, 200) + '...' : null,
+                    content: content ? `${content.substring(0, 200)}...` : null,
                     usage: data.usage
                 });
             }

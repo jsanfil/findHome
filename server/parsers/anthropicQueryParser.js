@@ -45,7 +45,7 @@ class AnthropicQueryParser extends QueryParserInterface {
                         'anthropic-version': '2023-06-01',
                         'content-type': 'application/json'
                     },
-                    body: requestBody
+                    body: JSON.stringify(requestBody, null, 2)
                 });
             }
 
@@ -71,7 +71,7 @@ class AnthropicQueryParser extends QueryParserInterface {
                 console.log(`[AnthropicQueryParser] Response:`, {
                     status: response.status,
                     statusText: response.statusText,
-                    content: content ? content.substring(0, 200) + '...' : null,
+                    content: content ? `${content.substring(0, 200)}...` : null,
                     usage: data.usage
                 });
             }
